@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Snake Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #111;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #game-board {
+      display: grid;
+      grid-template-columns: repeat(20, 20px);
+      grid-template-rows: repeat(20, 20px);
+      gap: 1px;
+      width: 402px;
+      margin: 0 auto;
+      background-color: #333;
+    }
+    .cell {
+      width: 20px;
+      height: 20px;
+      background-color: #222;
+    }
+    .snake {
+      background-color: limegreen;
+    }
+    .food {
+      background-color: red;
+    }
+    p {
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🐍 Snake Game</h1>
+  <div id="game-board"></div>
+  <p>Use Arrow Keys to Control the Snake</p>
+  
+  <script>
+    const boardSize = 20;
+    const board = document.getElementById("game-board");
+    const cells = [];
+    for (let i = 0; i < boardSize * boardSize; i++) {
+      const cell = document.createElement("div");
+      cell.classList.add("cell");
+      board.appendChild(cell);
+      cells.push(cell);
+    }
+
+    let snake = [42, 41, 40];
+    let direction = 1; // Right
+    let food = 0;
+    let interval = 200;
+
+    function draw() {
+      cells.forEach(cell => cell.className = "cell");
+      snake.forEach(i => cells[i].classList.add("snake"));
+      cells[food].classList.add("food");
+    }
+
+    function move() {
+      const head = snake[0];
+      const newHead = head + direction;
+
+      // Collision with walls
+      if (
+        (direction === 1 && head % boardSize === boardSize - 1) ||
+        (direction === -1 && head % boardSize === 0) ||
+        (direction === boardSize && head >= boardSize * (boardSize - 1)) ||
+        (direction === -boardSize && head < boardSize) ||
+        snake.includes(newHead)
+      ) {
+        alert("Game Over!");
+        location.reload();
+      }
+
+      snake.unshift(newHead);
+
+      if (newHead === food) {
+        placeFood();
+      } else {
+        snake.pop();
+      }
+
+      draw();
+    }
+
+    function placeFood() {
+      do {
+        food = Math.floor(Math.random() * boardSize * boardSize);
+      } while (snake.includes(food));
+    }
+
+    placeFood();
+    draw();
+    setInterval(move, interval);
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "ArrowUp" && direction !== boardSize) direction = -boardSize;
+      else if (e.key === "ArrowDown" && direction !== -boardSize) direction = boardSize;
+      else if (e.key === "ArrowLeft" && direction !== 1) direction = -1;
+      else if (e.key === "ArrowRight" && direction !== -1) direction = 1;
+    });
+  </script>
+</body>
+</html>
